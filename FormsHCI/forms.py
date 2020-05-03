@@ -18,7 +18,7 @@ class SUSForm(forms.ModelForm):
 
     class Meta:
         model = Domanda
-        fields = ('testoDomanda')
+        fields = ('testoDomanda',)
 
     OPTIONS = (('1', '1'),
                ('2', '2'),
