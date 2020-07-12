@@ -1,13 +1,17 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
-from .models import Domanda
-from .forms import SUSForm
+from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from .models import Quesito, FormEncoder
+from .models import Form
 import csv
+import json
 
 
 def index(request):
     context = {}
     return HttpResponse("this is index", context)
+    #return JsonResponse({'comments' : comments}) restituisce un json, serve un dizionario
 
 
 def create(request):
@@ -15,17 +19,22 @@ def create(request):
     return render(request, "create.html", context)
 
 
+def salvaForm(request):
+
+    form = Form(request.POST)
+
+
 def form(request):
 
     if request.method == 'POST':
-        form = SUSForm(request.POST)
+        form = Form(request.POST)
 
         if form.is_valid():
             form.cleaned_data #i cleaned data vanno messi nel csv
             return HttpResponseRedirect('completed.html') #pagina di form completato
 
     else:
-        form = SUSForm()
+        form = Form()
     return render(request, "form.html", {'form': form})
 
 
@@ -40,3 +49,6 @@ def results(request, form_id):
 def completed(request):
     context = {}
     return render(request, "completed.html", context)
+
+
+form_data = serializers.serialize("json", Form.objects.all(), cls=FormEncoder)
